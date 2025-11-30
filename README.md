@@ -1,6 +1,4 @@
 # 🚀 stellar-crypto
-### Core End-to-End Encryption SDK for the Stellar Ecosystem
-**Zero-Knowledge. Fast. Auditable. Open Source.**
 
 `stellar-crypto` is the official cryptographic core used across the **Stellar Security** ecosystem — powering encrypted storage, key-wrapping, secure sync, vault creation, and cross-platform AES-GCM operations.
 
