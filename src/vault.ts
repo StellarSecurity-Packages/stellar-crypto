@@ -114,53 +114,71 @@ export async function extractPlainEAK(
  * Encrypt a UTF-8 string with a raw 32-byte MK using AES-GCM.
  */
 export async function encryptTextWithMK(
-  mkRaw: Uint8Array,
-  plain: string,
-  aad?: string
+    mkRaw: Uint8Array,
+    plain: string,
+    aad?: string
 ): Promise<CipherBlobV1> {
-  if (mkRaw.length !== 32) {
-    throw new Error('MK must be 32 bytes');
-  }
-  const mk = await crypto.subtle.importKey('raw', mkRaw, 'AES-GCM', false, ['encrypt']);
-  const iv = crypto.getRandomValues(new Uint8Array(12));
-  const ad = aad ? enc.encode(aad) : undefined;
+    if (mkRaw.length !== 32) {
+        throw new Error('MK must be 32 bytes');
+    }
 
-  const ct = await crypto.subtle.encrypt(
-    { name: 'AES-GCM', iv, additionalData: ad },
-    mk,
-    enc.encode(plain)
-  );
+    // TS is being picky, so we cast to any for WebCrypto
+    const mk = await crypto.subtle.importKey(
+        'raw',
+        mkRaw as any,
+        'AES-GCM',
+        false,
+        ['encrypt']
+    );
 
-  return {
-    v: 1,
-    iv_b64: b64encode(iv),
-    ct_b64: b64encode(ct),
-    aad_b64: ad ? b64encode(ad) : undefined,
-  };
+    const iv = crypto.getRandomValues(new Uint8Array(12));
+    const ad = aad ? enc.encode(aad) : undefined;
+
+    const ct = await crypto.subtle.encrypt(
+        { name: 'AES-GCM', iv, additionalData: ad },
+        mk,
+        enc.encode(plain)
+    );
+
+    return {
+        v: 1,
+        iv_b64: b64encode(iv),
+        ct_b64: b64encode(ct),
+        aad_b64: ad ? b64encode(ad) : undefined,
+    };
 }
 
 /**
  * Decrypt a CipherBlobV1 back to UTF-8 using the raw 32-byte MK.
  */
 export async function decryptTextWithMK(
-  mkRaw: Uint8Array,
-  blob: CipherBlobV1
+    mkRaw: Uint8Array,
+    blob: CipherBlobV1
 ): Promise<string> {
-  if (mkRaw.length !== 32) {
-    throw new Error('MK must be 32 bytes');
-  }
-  if (blob.v !== 1) {
-    throw new Error('Unsupported blob version');
-  }
+    if (mkRaw.length !== 32) {
+        throw new Error('MK must be 32 bytes');
+    }
+    if (blob.v !== 1) {
+        throw new Error('Unsupported blob version');
+    }
 
-  const mk = await crypto.subtle.importKey('raw', mkRaw, 'AES-GCM', false, ['decrypt']);
-  const iv = new Uint8Array(b64decode(blob.iv_b64));
-  const ad = blob.aad_b64 ? new Uint8Array(b64decode(blob.aad_b64)) : undefined;
-  const pt = await crypto.subtle.decrypt(
-    { name: 'AES-GCM', iv, additionalData: ad },
-    mk,
-    b64decode(blob.ct_b64)
-  );
+    // Same here – cast to any to satisfy TS
+    const mk = await crypto.subtle.importKey(
+        'raw',
+        mkRaw as any,
+        'AES-GCM',
+        false,
+        ['decrypt']
+    );
 
-  return dec.decode(pt);
+    const iv = new Uint8Array(b64decode(blob.iv_b64));
+    const ad = blob.aad_b64 ? new Uint8Array(b64decode(blob.aad_b64)) : undefined;
+
+    const pt = await crypto.subtle.decrypt(
+        { name: 'AES-GCM', iv, additionalData: ad },
+        mk,
+        b64decode(blob.ct_b64)
+    );
+
+    return dec.decode(pt);
 }

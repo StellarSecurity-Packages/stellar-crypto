@@ -1,5 +1,5 @@
 {
-  "name": "stellar-crypto",
+  "name": "@stellarsecurity/stellar-crypto",
   "version": "1.0.0",
   "description": "Core E2EE cryptography for Stellar (vault, EAK, AES-GCM, PBKDF2).",
   "main": "dist/index.cjs",
@@ -17,5 +17,8 @@
     "pbkdf2"
   ],
   "author": "Stellar Security",
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "typescript": "^5.9.3"
+  }
 }
