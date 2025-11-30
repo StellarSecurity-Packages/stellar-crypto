@@ -1,0 +1,21 @@
+{
+  "name": "stellar-crypto",
+  "version": "1.0.0",
+  "description": "Core E2EE cryptography for Stellar (vault, EAK, AES-GCM, PBKDF2).",
+  "main": "dist/index.cjs",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc -p tsconfig.json"
+  },
+  "keywords": [
+    "crypto",
+    "e2ee",
+    "stellar",
+    "zero-knowledge",
+    "aes-gcm",
+    "pbkdf2"
+  ],
+  "author": "Stellar Security",
+  "license": "MIT"
+}
